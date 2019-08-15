@@ -4,7 +4,6 @@
  * @module types
  */
 
-const nacl = require('tweetnacl')
 const BaseSha256 = require('./base-sha256')
 const MissingDataError = require('../errors/missing-data-error')
 const ValidationError = require('../errors/validation-error')
@@ -101,10 +100,6 @@ class Ed25519Sha256 extends BaseSha256 {
       const keyPair = ed25519.MakeKeypair(privateKey)
       this.setPublicKey(keyPair.publicKey)
       this.signature = ed25519.Sign(message, keyPair)
-    } else {
-      const keyPair = nacl.sign.keyPair.fromSeed(privateKey)
-      this.setPublicKey(Buffer.from(keyPair.publicKey))
-      this.signature = Buffer.from(nacl.sign.detached(message, keyPair.secretKey))
     }
   }
 
@@ -169,8 +164,6 @@ class Ed25519Sha256 extends BaseSha256 {
     let result
     if (ed25519) {
       result = ed25519.Verify(message, this.signature, this.publicKey)
-    } else {
-      result = nacl.sign.detached.verify(message, this.signature, this.publicKey)
     }
 
     if (result !== true) {
